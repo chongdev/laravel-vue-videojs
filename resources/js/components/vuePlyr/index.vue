@@ -2,224 +2,218 @@
     <div>
         <h1>VuePlyr</h1>
 
-        <div class="player-plyr">
 
-            <div class="player-plyr--error" v-if="status=='error'">
+        <player
+            ref="player"
+            v-for="video in videos"
+            :key="video.id"
+            :video="video"
+            :current="current"
+            @update="updatePlayer"
+            @updateVideo="updateVideo"
+            @ended="endedVideo"
+        ></player>
 
-                <div class="h-100 d-flex flex-column justify-content-center align-items-center">
+        <!-- การเชื่อมต่อของคุณขัดข้อง -->
 
-                    <h1>ขออภัยวีดีโอ</h1>
-                    <div class="error-code">Error Code 404</div>
+        <h3>playlist</h3>
+        <div>
+
+            <div class="media mb-3" v-for="(item, i) in playlists" :key="i" :class="item.isPlay && 'is-play'">
+                <div @click="active( item.id, i )" class="video-thumbnail-wrap mr-3">
+                    <div class="video-thumbnail">
+                        <img :src="item.thumbnail" alt="">
+                    </div>
+
+                    <div class="video-thumbnail-control">
+                        <button type="button" class="video-thumbnail-control--play"></button>
+                    </div>
+                </div>
+                <div class="media-body">
+                    <h5 class="mt-0">{{ item.title }}</h5>
+                    <p class="mt-0">{{ item.disc }}</p>
+
+
+                    <div class="d-flex align-items-center">
+
+                        <button type="button" class="btn btn-sm btn-secondary" @click="active( item.id, i )">
+                            <span v-if="item.isPlay">stop</span>
+                            <span v-else>play</span>
+                        </button>
+
+                        <div class="ml-2">
+                            timerstamp: {{ item.timerstamp }}
+                        </div>
+                        <div class="ml-2">
+                            duration: {{ item.duration }}
+                        </div>
+                        <div class="ml-2">
+                            currentTime: {{ item.currentTime }}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="player-plyr--player" :class="status=='error' && 'd-none'">
-                <vue-plyr ref="plyr" :options="options">
-                    <video controls crossorigin playsinline data-poster="https://is5-ssl.mzstatic.com/image/thumb/Video128/v4/d5/c8/da/d5c8da3d-ead5-e1f2-f3ed-cd280529ff4e/Jobb6e9148e-e9ce-4873-8235-ec9f90a80dda-98861165-PreviewImage_preview_image_video_sdr-Time1516913295918.png/313x177mv.webp">
-
-                        <source
-                            size="1080"
-                            src="https://video-ssl.itunes.apple.com/itunes-assets/Video118/v4/0d/90/b5/0d90b5c4-3ada-858e-3640-b4c7372a8573/mzvf_8117403962437200200.640x480.h264lc.U.p.m4v"
-                            @error="onError"
-                        />
-
-                        <!-- <track
-                            default
-                            kind="captions"
-                            label="English captions"
-                            src="/path/to/english.vtt"
-                            srclang="en"
-                        /> -->
-                    </video>
-                </vue-plyr>
-            </div>
-
         </div>
 
-
-        <div class="d-flex">
-            <div>timerstamp: {{ timerstamp }} </div>
-        </div>
     </div>
 </template>
 
 <script>
-import VuePlyr from "vue-plyr";
-import "vue-plyr/dist/vue-plyr.css";
+
+import Player from "./Player";
 
 export default {
     components: {
-        VuePlyr,
+        Player,
     },
     data() {
         return {
-            options: {
-                controls: [
+            loading: false,
 
-                    "play-large",
+            playlists: [],
 
-                    // "play",
-                    "current-time", // The current time of playback
-                    "progress", // The progress bar and scrubber for playback and buffering
-                    'duration', // The full duration of the
-
-                    "mute", // Toggle mute
-                    "volume", // Volume control
-
-                    "fullscreen", // Toggle fullscreen
-                ],
-
-                // autoplay: true,
-            },
+            videos: [],
+            current: null,
 
             player: null,
-            duration: null,
-
-            running: false,
-            status: 'loading',
-
-            startTime: null,
-            timer: null,
-            timerstamp: '00:00',
-            taketime: 0,
-
-            countTimestamp: 0,
-            updateTimestamp: 5,
         };
     },
 
     mounted(){
 
-        this.player = this.$refs.plyr.player;
 
-        this.player.on('enterfullscreen', () => console.log('..enterfullscreen..') );
-        this.player.on('progress', () => console.log('..progress..') );
-        this.player.on('playing', () => console.log('..playing..') );
-        this.player.on('play', () => {
+        this.getVideo()
 
+        // if( !this.current  ){
 
-            if( this.timer ){
-                clearInterval( this.timer )
-            }
-            this.startTimer();
-
-            console.log('..play..')
-        } );
-        this.player.on('pause', () => {
-
-            if( this.timer ){
-                clearInterval( this.timer )
-            }
-
-            console.log('..pause..')
-        });
-        this.player.on('timeupdate', () => console.log('..timeupdate..') );
-        this.player.on('volumechange', () => console.log('..volumechange..') );
-        this.player.on('seeking', () => console.log('..seeking..') );
-        this.player.on('seeked', () => console.log('..seeked..') );
-        this.player.on('ratechange', () => console.log('..ratechange..') );
-        this.player.on('ended', () => console.log('..ended..') );
-        this.player.on('enterfullscreen', () => console.log('..enterfullscreen..') );
-        this.player.on('exitfullscreen', () => console.log('..exitfullscreen..') );
-        this.player.on('captionsenabled', () => console.log('..captionsenabled..') );
-        this.player.on('captionsdisabled', () => console.log('..captionsdisabled..') );
-        this.player.on('languagechange', () => console.log('..languagechange..') );
-        this.player.on('controlshidden', () => console.log('..controlshidden..') );
-        this.player.on('controlsshown', () => console.log('..controlsshown..') );
-        this.player.on('ready', event => {
-            const instance = event.detail.plyr;
-
-            console.log( 'ready...', instance );
-        });
+        //     let startId = this.playlists[0].id
+        //     this.active( startId, 0 )
+        // }
 
     },
 
     methods: {
-        startTimer(){
+        getVideo(){
+            const vm = this;
 
-            const vm = this
+            vm.loading = true;
 
-            if( !vm.startTime ){
-                vm.startTime = new Date();
+            axios
+                .get(`/apis/videos`)
+                .then(response => {
+                    vm.loading = false;
+
+                    vm.setVideo( response.data );
+                })
+                .catch(error => {
+                    vm.loading = false;
+
+                });
+
+        },
+        setVideo( data ){
+
+            this.playlists = [];
+
+            data.forEach(video => {
+
+                let cogs = $.extend( {}, {
+                    startTime: 0,
+                    duration: 0,
+                    currentTime: 0,
+                    timerstamp: '00:00',
+                    isActive: false,
+                    player: null,
+                    isPlay: false,
+                }, video );
+
+                // console.log(cogs);
+
+                this.playlists.push( cogs )
+
+            });
+
+            //
+            let startId = this.playlists[0].id
+            this.active( startId, 0 )
+        },
+        active( id, index ){
+
+            if (this.current == id){
+
+                let video = this.videos.find(n=>n.id==id)
+
+                if( this.player && video ){
+                    // console.log( '....', video.isPlay );
+                    if( video.isPlay ){
+                        this.player.pause()
+                    }else{
+                        this.player.play()
+                    }
+                }
+
+                return false;
+            }
+            this.current = id;
+
+            if( this.player ){
+                // this.video.isActive = false
+                this.player.pause()
+                // console.log( 2555, this.player );
             }
 
-            let sec_num = 0
-            let ms_num = 0
+            const player = this.playlists.find(n=>n.id==id)
+            // video = videos
+            let video = this.videos.find(n=>n.id==id)
 
+            if( !video ){
 
-            this.timer = setInterval(function () {
+                player.index = index
+                this.videos.push( player )
+            }
+            else{
 
-                var elapsedTime = Date.now() - vm.startTime;
+                this.$refs.player[index].active();
+            }
 
-                var dift = (elapsedTime / 1000).toFixed(2)
-                var ms = parseInt(dift.split('.')[1])
-                sec_num = dift.split('.')[0]
+            // if( typeof this.$refs.player[index] === Object ){
 
-                // // var sec_num = parseInt(this, 10); // don't forget the second param
-                var hours   = Math.floor(sec_num / 3600);
-                var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-                var seconds = sec_num - (hours * 3600) - (minutes * 60);
+            //     console.log( 2555 );
+            // }
+            // video.active = true
 
-                // var ms = ms_num;
+            // console.log( 'refs...', this.$refs.player  );
+            // this.$refs.player.update( player )
+        },
 
+        updatePlayer( player ){
+            this.player = player;
 
-                if (minutes < 10) {minutes = "0"+minutes;}
-                if (seconds < 10) {seconds = "0"+seconds;}
-                if (ms < 10) {ms = "0"+ms;}
+            // player.play();
+            // console.log( this.player );
+        },
 
-                if( hours > 0 ){
+        updateVideo( data ){
 
-                    if (hours   < 10) {hours   = "0"+hours;}
-                    vm.timerstamp = hours+':'+minutes+':'+seconds +'.'+ ms
-                }
-                else{
-                    vm.timerstamp = minutes+':'+seconds
-                }
+            // console.log( 'updateVideo...' );
+            // const index = this.playlists.findIndex( n=>n.id==data.id )
+            // this.playlists[index].timerstamp = data.timerstamp
+            // console.log( 'updateVideo..', index );
+        },
 
-                if( vm.countTimestamp == vm.updateTimestamp ){
-                    vm.update_timestamp()
-                }
+        endedVideo(){
 
-                vm.taketime = dift
+            let video = this.videos.find(n=>n.id==this.current)
 
-            }, 1000);
+            console.log( 'endedVideo', video );
         },
 
 
-        update_timestamp(){
-            const vm = this
-
-            console.log( 'update timestamp' );
-            vm.countTimestamp = 0;
-        },
-
-
-        onError(){
-
-            this.status = 'error'
-            console.log('onError..');
-        }
     }
 };
 </script>
 
 <style lang="scss" scoped>
 
-    .player-plyr{
-        width: 100%;
-        height: 0;
-        background-color: #000;
-        color: #fff;
-        overflow: hidden;
-        position: relative;
-        padding-top: 56.25%;
-    }
 
-    .player-plyr--player,
-    .player-plyr--error{
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
 </style>

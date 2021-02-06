@@ -32,7 +32,14 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
+                    <ul class="navbar-nav bd-navbar-nav flex-row">
+
+                        <li class="nav-item">
+                            <a class="nav-link " href="/">vuePlyr</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="/videojs">VideoJs</a>
+                        </li>
 
                     </ul>
 
