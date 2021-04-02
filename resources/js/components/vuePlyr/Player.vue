@@ -32,7 +32,6 @@
                         @progress="playerProgress"
 
                         :data-poster="video.thumbnail"
-
                     >
                         <!-- controls crossorigin playsinline -->
 

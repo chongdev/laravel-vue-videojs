@@ -89,6 +89,7 @@ export default {
     mounted(){
         const vm = this;
 
+        
         // console.log('this is current player instance object', this.player)
 
         // this.$emit('update', this.player)
@@ -210,6 +211,4 @@ export default {
             }
         }
     }
-
-
 </style>

@@ -2,30 +2,46 @@
     <div>
         <h1>videojs</h1>
 
-        <player ref="player" @updateVideo="updateVideo" @update="updatePlayer"></player>
+        <player
+            ref="player"
+            @updateVideo="updateVideo"
+            @update="updatePlayer"
+        ></player>
 
         <!-- v-for="(video, i) in videos" :key="i" :video="video"  -->
         <h3>playlist</h3>
         <div>
-
-            <div class="media mb-3" v-for="(item, i) in playlists" :key="i" :class="item.isPlay && 'is-play'">
-                <div @click="active( item.id, i )" class="video-thumbnail-wrap mr-3">
+            <div
+                class="media mb-3"
+                v-for="(item, i) in playlists"
+                :key="i"
+                :class="item.isPlay && 'is-play'"
+            >
+                <div
+                    @click="active(item.id, i)"
+                    class="video-thumbnail-wrap mr-3"
+                >
                     <div class="video-thumbnail">
-                        <img :src="item.thumbnail" alt="">
+                        <img :src="item.thumbnail" alt="" />
                     </div>
 
                     <div class="video-thumbnail-control">
-                        <button type="button" class="video-thumbnail-control--play"></button>
+                        <button
+                            type="button"
+                            class="video-thumbnail-control--play"
+                        ></button>
                     </div>
                 </div>
                 <div class="media-body">
                     <h5 class="mt-0">{{ item.title }}</h5>
                     <p class="mt-0">{{ item.disc }}</p>
 
-
                     <div class="d-flex align-items-center">
-
-                        <button type="button" class="btn btn-sm btn-secondary" @click="active( item.id, i )">
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            @click="active(item.id, i)"
+                        >
                             <span v-if="item.isPlay">stop</span>
                             <span v-else>play</span>
                         </button>
@@ -33,9 +49,7 @@
                         <div class="ml-2">
                             timerstamp: {{ item.timerstamp }}
                         </div>
-                        <div class="ml-2">
-                            duration: {{ item.duration }}
-                        </div>
+                        <div class="ml-2">duration: {{ item.duration }}</div>
                         <div class="ml-2">
                             currentTime: {{ item.currentTime }}
                         </div>
@@ -73,49 +87,53 @@ export default {
         //     this.player.muted(false);
         // }, 2000);
 
-        this.getVideo()
+        this.getVideo();
+
+        setTimeout(() => {
+
+            this.active( 1,  0)
+        }, 800);
     },
 
     methods: {
-
-        getVideo(){
+        getVideo() {
             const vm = this;
 
             vm.loading = true;
 
             axios
                 .get(`/apis/videos`)
-                .then(response => {
+                .then((response) => {
                     vm.loading = false;
 
-                    vm.setVideo( response.data );
+                    vm.setVideo(response.data);
                 })
-                .catch(error => {
+                .catch((error) => {
                     vm.loading = false;
                 });
-
         },
 
-        setVideo( data ){
-
+        setVideo(data) {
             this.playlists = [];
 
-            data.forEach(video => {
-
-                let cogs = $.extend( {}, {
-                    startTime: 0,
-                    duration: 0,
-                    currentTime: 0,
-                    timerstamp: '00:00',
-                    isActive: false,
-                    player: null,
-                    isPlay: false,
-                }, video );
+            data.forEach((video) => {
+                let cogs = $.extend(
+                    {},
+                    {
+                        startTime: 0,
+                        duration: 0,
+                        currentTime: 0,
+                        timerstamp: "00:00",
+                        isActive: false,
+                        player: null,
+                        isPlay: false,
+                    },
+                    video
+                );
 
                 // console.log(cogs);
 
-                this.playlists.push( cogs )
-
+                this.playlists.push(cogs);
             });
 
             // //
@@ -123,8 +141,7 @@ export default {
             // this.active( startId, 0 )
         },
 
-        playerOptions( video ){
-
+        playerOptions(video) {
             return {
                 // height: "360",
                 // autoplay: true,
@@ -145,17 +162,14 @@ export default {
             };
         },
 
+        active(id, index) {
+            console.log("Playlist Active..", id, index, this.player);
 
-        active(id, index){
+            let video = this.playlists.find((n) => n.id == id);
 
-            console.log( 'Playlist Active..', id, index, this.player );
+            this.$refs.player.updateVideo(video);
 
-            let video = this.playlists.find(n=>n.id==id)
-
-
-            this.$refs.player.updateVideo( video )
-
-            this.video = video
+            this.video = video;
             // if( this.player ){
 
             //     console.log( 'playlist destroy..', this.$refs.player );
@@ -164,12 +178,34 @@ export default {
             // this.videos.push( video )
         },
 
-        updatePlayer( player ){
-            this.player = player
+        updatePlayer(player) {
+            this.player = player;
         },
-        updateVideo( video ){
-            this.video = video
+        updateVideo(video) {
+            this.video = video;
         },
     },
 };
 </script>
+
+<style lang="scss">
+.video-js {
+    .vjs-big-play-button {
+        border-width: 0;
+        width: 96px;
+        height: 96px;
+        // display: flex;
+        border-radius: 50px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        .vjs-icon-placeholder {
+            line-height: 96px;
+            font-size: 60px;
+        }
+    }
+}
+
+.vjs-skin-hotdog-stand { color: #FF0000; }
+</style>

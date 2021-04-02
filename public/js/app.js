@@ -49651,15 +49651,15 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
 var VideoJs = function VideoJs() {
-  return Promise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(3), __webpack_require__.e(5)]).then(__webpack_require__.bind(null, /*! ./components/VideoJs/index.vue */ "./resources/js/components/VideoJs/index.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(1), __webpack_require__.e(0), __webpack_require__.e(6)]).then(__webpack_require__.bind(null, /*! ./components/VideoJs/index.vue */ "./resources/js/components/VideoJs/index.vue"));
 };
 
 var myVideo = function myVideo() {
-  return Promise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(4), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ./components/myVideo/index.vue */ "./resources/js/components/myVideo/index.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(1), __webpack_require__.e(4), __webpack_require__.e(8)]).then(__webpack_require__.bind(null, /*! ./components/myVideo/index.vue */ "./resources/js/components/myVideo/index.vue"));
 };
 
 var vuePlyr = function vuePlyr() {
-  return Promise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(2), __webpack_require__.e(6)]).then(__webpack_require__.bind(null, /*! ./components/vuePlyr/index.vue */ "./resources/js/components/vuePlyr/index.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(1), __webpack_require__.e(2), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ./components/vuePlyr/index.vue */ "./resources/js/components/vuePlyr/index.vue"));
 };
 
 var app = new Vue({
